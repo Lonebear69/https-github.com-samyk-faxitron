@@ -32,35 +32,49 @@ See also: https://github.com/JohnDMcMaster/gxs700
 
 ## Installation
 
+Just run `./install.sh` (shown below)
+
 Requirements and strong recommendations:
-  * Faxitron x-ray as found on DX-50 (and maybe MX-20)
+  * Faxitron X-ray as found on DX-50 (and maybe MX-20)
   * Hammamatsu C9730DK-11 sensor as found on DX-50 w/ DC5 option
   * Ubuntu 16.04 x64. While code is cross platform, Ubuntu at least is strongly reccomended during early testing
   * USB serial converter
 
+```sh
+# install.sh
+# Linux installation
+if [[ `uname` == 'Linux' ]]; then
+  sudo apt-get install -y python3-numpy python3-scipy python3-pil python3-serial
+  sudo pip3 install libusb1
+  ./udev.sh
+  sudo usermod -a -G plugdev $USER
+
+  # Optional
+  sudo apt-get install -y imagemagick
+
+# macOS installation (may work on other OS's...)
+else
+  sudo pip3 install numpy
+  sudo pip3 install scipy
+  sudo pip3 install Pillow
+  sudo pip3 install serial
+  sudo pip3 install libusb1
+fi
 ```
-sudo apt-get install -y python3-numpy python3-scipy python3-pil python3-serial
-sudo pip3 install libusb1
-./udev.sh
-sudo usermod -a -G plugdev $USER
 
-# Optional
-sudo apt-get install -y imagemagick
-```
+On Linux, you may need to restart your computer for changes to take effect.
 
-You may need to restart your computer for changes to take effect.
-
-Plug in the sensor USB and use a USB serial converter to connect to the x-ray (default: /dev/ttyUSB0)
+Plug in the sensor USB and use a USB serial converter to connect to the x-ray (default: `/dev/ttyUSB0`, change with `--port`)
 
 Verify installation by checking communication:
 
-```
+```sh
 python3 dump.py
 ```
 
 Then if you wish close the door and take an x-ray:
 
-```
+```sh
 python3 main.py
 ```
 
@@ -69,7 +83,7 @@ You may get a warning about missing calibration. Images will be stored to direct
 ## Collect diagnostic information
 
 If you can please run:
-```
+```sh
 python3 dump.py
 ```
 And send the resulting "dump" folder to JohnDMcMaster at gmail.com. It would also be nice if you can include your cal folder so I can also get a better idea of common sensor issues
@@ -83,7 +97,7 @@ Some general notes:
 * 35 kVp default
 * About 4 images is good to reduce noise, with slight improvement at 8. Beyond that there is minor improvement. As such capture default is 8, but for calibration we collect more
 
-```
+```sh
 ./cal.sh
 ```
 
@@ -96,7 +110,7 @@ Other: a bad pixel is currently defined as one that fails to cover at least 25% 
 
 With calibration generated, you should no longer get a calibration warning:
 
-```
+```sh
 python3 main.py
 ```
 Note that raw images (in subdirs) are stored raw while the final output image is process. The correction pipeline is roughly:
@@ -112,7 +126,7 @@ Note that raw images (in subdirs) are stored raw while the final output image is
 We've experimented briefly with algorithms. As of 2019-12-27, there are two modes availible
 which can be changed through environment variable FAXITRON_EQ_MODE. ie
 
-```
+```sh
 export FAXITRON_EQ_MODE=convert
 ```
 
